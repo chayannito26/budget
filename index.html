@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Budget Overview</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* General Styling & Variables */
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --primary-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
+            --accent-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+        }
+
+        /* Helper Class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            background: var(--secondary-bg);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+        }
+
+        /* Total Budget Card */
+        .total-budget-card {
+            background: var(--accent-gradient);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: -3rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .total-budget-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .total-amount {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        /* Budget Breakdown Section */
+        .budget-breakdown {
+            padding-top: 4rem;
+        }
+
+        .breakdown-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .breakdown-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .breakdown-header h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* View Toggle Switch */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--card-bg);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--accent-gradient);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Card View */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .category-header i {
+            font-size: 1.8rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-header h3 {
+            font-size: 1.4rem;
+        }
+
+        .budget-list { list-style: none; }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--secondary-bg);
+        }
+
+        .budget-item:last-child { border-bottom: none; }
+        .item-name { color: var(--primary-text); }
+        .item-cost {
+            font-weight: 600;
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        /* Table View */
+        .table-view {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden; /* Ensures child elements respect border-radius */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .budget-table th, .budget-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-bg);
+        }
+
+        .budget-table thead {
+            background-color: var(--secondary-bg);
+        }
+
+        .budget-table th {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .budget-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .budget-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .budget-table .item-cost-cell {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            background-color: var(--secondary-bg);
+            color: var(--secondary-text);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            header h1 { font-size: 2.5rem; }
+            .total-amount { font-size: 3rem; }
+            .category-grid { grid-template-columns: 1fr; }
+            .budget-table th, .budget-table td { padding: 0.8rem 1rem; }
+            .budget-table .item-cost-cell { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Chayannito 26 Rag Day</h1>
+            <p>A Transparent Look at Our Program Budget</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="total-budget-card">
+            <h2>Total Estimated Budget</h2>
+            <p class="total-amount" id="total-amount">0</p>
+        </section>
+
+        <section class="budget-breakdown">
+            <div class="breakdown-header">
+                <h2>Detailed Breakdown</h2>
+                <div class="view-toggle">
+                    <i class="fas fa-th-large"></i>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="view-toggle-checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-list"></i>
+                </div>
+            </div>
+
+            <div class="category-grid" id="card-view">
+                <div class="category-card">
+                    <div class="category-header"><i class="fas fa-microphone-alt"></i><h3>Performance & Talent</h3></div>
+                    <ul class="budget-list">
+                        <li class="budget-item"><span class="item-name">Main Band</span> <span class="item-cost">৳ 2,50,000</span></li>
+                        <li class="budget-item"><span class="item-name">Magician</span> <span class="item-cost">৳ 20,000</span></li>
+                        <li class="budget-item"><span class="item-name">Flashmob</span> <span class="item-cost">৳ 20,000</span></li>
+                        <li class="budget-item"><span class="item-name">Theme Song Production</span> <span class="item-cost">৳ 15,000</span></li>
+                        <li class="budget-item"><span class="item-name">Local Band</span> <span class="item-cost">৳ 5,000</span></li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-header"><i class="fas fa-cogs"></i><h3>Production & Logistics</h3></div>
+                    <ul class="budget-list">
+                        <li class="budget-item"><span class="item-name">Sound System</span> <span class="item-cost">৳ 50,000</span></li>
+                        <li class="budget-item"><span class="item-name">Lighting & Stage</span> <span class="item-cost">৳ 50,000</span></li>
+                        <li class="budget-item"><span class="item-name">Camera & Videography</span> <span class="item-cost">৳ 30,000</span></li>
+                        <li class="budget-item"><span class="item-name">Program Opening</span> <span class="item-cost">৳ 5,000</span></li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-header"><i class="fas fa-bullhorn"></i><h3>Marketing & Branding</h3></div>
+                    <ul class="budget-list">
+                        <li class="budget-item"><span class="item-name">T-shirts / Shirts</span> <span class="item-cost">৳ 40,000</span></li>
+                        <li class="budget-item"><span class="item-name">Banners</span> <span class="item-cost">৳ 30,000</span></li>
+                        <li class="budget-item"><span class="item-name">General Marketing</span> <span class="item-cost">৳ 20,000</span></li>
+                        <li class="budget-item"><span class="item-name">Graffiti Art</span> <span class="item-cost">৳ 10,000</span></li>
+                        <li class="budget-item"><span class="item-name">Alpona Drawing</span> <span class="item-cost">৳ 5,000</span></li>
+                        <li class="budget-item"><span class="item-name">Logo Design</span> <span class="item-cost">৳ 1,000</span></li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-header"><i class="fas fa-users"></i><h3>Hospitality & Participants</h3></div>
+                    <ul class="budget-list">
+                        <li class="budget-item"><span class="item-name">Lunch</span> <span class="item-cost">৳ 75,000</span></li>
+                        <li class="budget-item"><span class="item-name">Band Hospitality</span> <span class="item-cost">৳ 30,000</span></li>
+                        <li class="budget-item"><span class="item-name">Student Gifts</span> <span class="item-cost">৳ 25,000</span></li>
+                        <li class="budget-item"><span class="item-name">Volunteer T-Shirt</span> <span class="item-cost">৳ 1,400</span></li>
+                    </ul>
+                </div>
+                <div class="category-card">
+                    <div class="category-header"><i class="fas fa-print"></i><h3>Administration & Printing</h3></div>
+                    <ul class="budget-list">
+                        <li class="budget-item"><span class="item-name">Student Entry Coupon</span> <span class="item-cost">৳ 7,000</span></li>
+                        <li class="budget-item"><span class="item-name">Entry Pass Printing</span> <span class="item-cost">৳ 5,000</span></li>
+                        <li class="budget-item"><span class="item-name">Committee ID Cards</span> <span class="item-cost">৳ 5,000</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-view hidden" id="table-view">
+                <table class="budget-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th class="item-cost-cell">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Main Band</td><td>Performance & Talent</td><td class="item-cost-cell">৳ 2,50,000</td></tr>
+                        <tr><td>Lunch</td><td>Hospitality & Participants</td><td class="item-cost-cell">৳ 75,000</td></tr>
+                        <tr><td>Sound System</td><td>Production & Logistics</td><td class="item-cost-cell">৳ 50,000</td></tr>
+                        <tr><td>Lighting & Stage</td><td>Production & Logistics</td><td class="item-cost-cell">৳ 50,000</td></tr>
+                        <tr><td>T-shirts / Shirts</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 40,000</td></tr>
+                        <tr><td>Camera & Videography</td><td>Production & Logistics</td><td class="item-cost-cell">৳ 30,000</td></tr>
+                        <tr><td>Band Hospitality</td><td>Hospitality & Participants</td><td class="item-cost-cell">৳ 30,000</td></tr>
+                        <tr><td>Banners</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 30,000</td></tr>
+                        <tr><td>Student Gifts</td><td>Hospitality & Participants</td><td class="item-cost-cell">৳ 25,000</td></tr>
+                        <tr><td>Magician</td><td>Performance & Talent</td><td class="item-cost-cell">৳ 20,000</td></tr>
+                        <tr><td>Flashmob</td><td>Performance & Talent</td><td class="item-cost-cell">৳ 20,000</td></tr>
+                        <tr><td>General Marketing</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 20,000</td></tr>
+                        <tr><td>Theme Song Production</td><td>Performance & Talent</td><td class="item-cost-cell">৳ 15,000</td></tr>
+                        <tr><td>Graffiti Art</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 10,000</td></tr>
+                        <tr><td>Student Entry Coupon</td><td>Administration & Printing</td><td class="item-cost-cell">৳ 7,000</td></tr>
+                        <tr><td>Local Band</td><td>Performance & Talent</td><td class="item-cost-cell">৳ 5,000</td></tr>
+                        <tr><td>Alpona Design</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 5,000</td></tr>
+                        <tr><td>Program Opening</td><td>Production & Logistics</td><td class="item-cost-cell">৳ 5,000</td></tr>
+                        <tr><td>Entry Pass Printing</td><td>Administration & Printing</td><td class="item-cost-cell">৳ 5,000</td></tr>
+                        <tr><td>Committee ID Cards</td><td>Administration & Printing</td><td class="item-cost-cell">৳ 5,000</td></tr>
+                        <tr><td>Volunteer Support</td><td>Hospitality & Participants</td><td class="item-cost-cell">৳ 1,400</td></tr>
+                        <tr><td>Logo Design</td><td>Marketing & Branding</td><td class="item-cost-cell">৳ 1,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Chayannito 26 Committee. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Animated Counter ---
+            const totalAmountElement = document.getElementById('total-amount');
+
+            // Helper to parse cost string like '৳ 2,50,000' to number
+            function parseCost(str) {
+                // Remove currency symbol and commas, then parse as integer
+                return parseInt(str.replace(/[^\d]/g, ''), 10) || 0;
+            }
+
+            // Collect cost elements only from the currently visible view
+            function getAllCosts() {
+                const cardView = document.getElementById('card-view');
+                const tableView = document.getElementById('table-view');
+                let costs = [];
+                if (!cardView.classList.contains('hidden')) {
+                    // Card view is visible
+                    const costSpans = Array.from(cardView.querySelectorAll('.item-cost'));
+                    costSpans.forEach(span => costs.push(parseCost(span.textContent)));
+                } else if (!tableView.classList.contains('hidden')) {
+                    // Table view is visible
+                    const costCells = Array.from(tableView.querySelectorAll('.item-cost-cell'));
+                    costCells.forEach(cell => costs.push(parseCost(cell.textContent)));
+                }
+                return costs;
+            }
+
+            function calculateTotal() {
+                const costs = getAllCosts();
+                return costs.reduce((sum, val) => sum + val, 0);
+            }
+
+            function animateValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const currentVal = Math.floor(progress * (end - start) + start);
+                    obj.innerHTML = '৳ ' + currentVal.toLocaleString('en-IN');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        obj.innerHTML = '৳ ' + end.toLocaleString('en-IN');
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const finalTotal = calculateTotal();
+                        animateValue(totalAmountElement, 0, finalTotal, 2000);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            observer.observe(totalAmountElement);
+
+            // --- View Toggle Logic ---
+            const toggleCheckbox = document.getElementById('view-toggle-checkbox');
+            const cardView = document.getElementById('card-view');
+            const tableView = document.getElementById('table-view');
+            const storageKey = 'budgetViewPreference';
+
+            // Function to switch view
+            function switchView(isTableView) {
+                if (isTableView) {
+                    cardView.classList.add('hidden');
+                    tableView.classList.remove('hidden');
+                } else {
+                    cardView.classList.remove('hidden');
+                    tableView.classList.add('hidden');
+                }
+            }
+
+            // Event listener for the toggle
+            toggleCheckbox.addEventListener('change', () => {
+                const isTableView = toggleCheckbox.checked;
+                switchView(isTableView);
+                // Save preference to localStorage
+                localStorage.setItem(storageKey, isTableView ? 'table' : 'card');
+            });
+
+            // Check for saved preference on page load
+            const savedPreference = localStorage.getItem(storageKey);
+            if (savedPreference === 'table') {
+                toggleCheckbox.checked = true;
+                switchView(true);
+            } else {
+                // Default is card view
+                toggleCheckbox.checked = false;
+                switchView(false);
+            }
+        });
+    </script>
+
+</body>
+</html>
