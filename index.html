@@ -284,6 +284,14 @@
             background-color: rgba(255, 255, 255, 0.03);
         }
 
+        /* Alternating row colors for better readability */
+        .budget-table tbody tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .budget-table tbody tr:nth-child(even) {
+            background-color: transparent;
+        }
+
         .budget-table .item-cost-cell {
             font-weight: 600;
             text-align: right;
@@ -525,12 +533,14 @@
             });
 
             const savedPreference = localStorage.getItem(storageKey);
-            if (savedPreference === 'table') {
-                toggleCheckbox.checked = true;
-                switchView(true);
-            } else {
+            // Default to table (list) view unless user has a saved preference
+            if (savedPreference === 'card') {
                 toggleCheckbox.checked = false;
                 switchView(false);
+            } else {
+                // savedPreference === 'table' or null -> default to table
+                toggleCheckbox.checked = true;
+                switchView(true);
             }
         });
     </script>
