@@ -215,6 +215,26 @@
             margin-top: 0.5rem;
         }
 
+        /* Editable raised amount styled to look like plain text */
+        .raised-input {
+            background: transparent;
+            border: none;
+            color: var(--primary-text);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            min-width: 8ch;
+            max-width: 14ch;
+            -moz-appearance: textfield;
+        }
+
+        .raised-input::placeholder {
+            color: var(--secondary-text);
+        }
+
         /* Budget Breakdown Section */
         .budget-breakdown {
             padding-top: 4rem;
@@ -330,6 +350,7 @@
         .category-header i {
             font-size: 1.8rem;
             background: var(--accent-gradient);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -457,7 +478,7 @@
                 <div class="progress-header">
                     <h3>Funds Raised</h3>
                     <div class="tier-indicator">
-                        Budget Tier: <span class="tier-name" id="tier-name">Tier 7</span>
+                        Budget: <span class="tier-name" id="budget-amount">৳ 7,00,000</span>
                     </div>
                 </div>
                 <div class="progress-bar-container">
@@ -466,7 +487,8 @@
                 <input type="range" min="0" max="1000000" value="700000" class="progress-slider" id="progress-slider">
                 <div class="progress-labels">
                     <span>৳ 0</span>
-                    <span id="current-raised">৳ 7,00,000</span>
+                    <!-- Make the raised amount editable inline. It looks like plain text but is an input. -->
+                    <input id="current-raised" class="raised-input" aria-label="Funds raised" value="৳ 7,00,000">
                     <span>৳ 10,00,000</span>
                 </div>
             </div>
@@ -684,26 +706,76 @@
             }
 
             // --- Progress Bar Logic ---
+
             const progressSlider = document.getElementById('progress-slider');
             const progressBarFill = document.getElementById('progress-bar-fill');
-            const currentRaisedElement = document.getElementById('current-raised');
-            const tierNameElement = document.getElementById('tier-name');
+            const currentRaisedElement = document.getElementById('current-raised'); // now an <input>
+            const budgetAmountElement = document.getElementById('budget-amount');
 
-            function updateProgressBar() {
-                const amount = parseInt(progressSlider.value);
-                const percentage = (amount / 1000000) * 100;
+            // Helper: parse currency like '৳ 7,00,000' or '700000' to integer
+            function parseCurrencyInput(value) {
+                if (typeof value === 'number') return Math.floor(value);
+                // Remove currency symbol, commas, and non-digits
+                const digits = String(value).replace(/[^0-9]/g, '');
+                return digits === '' ? 0 : parseInt(digits, 10);
+            }
+
+            // Helper to set the input's displayed formatted value without moving caret unexpectedly
+            function setFormattedRaised(value) {
+                const formatted = formatCurrency(value);
+                currentRaisedElement.value = formatted;
+            }
+
+            function updateProgressBar(fromInput = false) {
+                // Read amount either from slider (default) or input depending on caller
+                let amount = fromInput ? parseCurrencyInput(currentRaisedElement.value) : parseInt(progressSlider.value, 10);
+                // Clamp amount to slider bounds
+                const min = parseInt(progressSlider.min, 10) || 0;
+                const max = parseInt(progressSlider.max, 10) || 1000000;
+                amount = Math.max(min, Math.min(max, amount));
+
+                const percentage = (amount / max) * 100;
                 progressBarFill.style.width = percentage + '%';
-                currentRaisedElement.textContent = formatCurrency(amount);
-                
+
+                // Keep visual in sync: update both slider and input (but avoid infinite loops)
+                if (!fromInput) {
+                    setFormattedRaised(amount);
+                } else {
+                    // If update came from input, also update slider value
+                    progressSlider.value = amount;
+                }
+
                 const tier = getTierFromAmount(amount);
                 if (tier.tier !== currentTier) {
                     currentTier = tier.tier;
-                    tierNameElement.textContent = tier.name;
                     updateDisplays(false);
                 }
+                // Always update the shown budget amount to reflect the active tier's budget
+                if (budgetAmountElement) budgetAmountElement.textContent = formatCurrency(tier.budget);
             }
 
-            progressSlider.addEventListener('input', updateProgressBar);
+            // Keep slider -> input
+            progressSlider.addEventListener('input', () => updateProgressBar(false));
+
+            // Input -> slider (handle keyboard entry and paste)
+            let inputTimeout = null;
+            currentRaisedElement.addEventListener('input', () => {
+                // Debounce to avoid too many updates while typing
+                if (inputTimeout) clearTimeout(inputTimeout);
+                inputTimeout = setTimeout(() => {
+                    updateProgressBar(true);
+                }, 250);
+            });
+
+            // On blur, reformat and ensure clamped value
+            currentRaisedElement.addEventListener('blur', () => {
+                const amount = parseCurrencyInput(currentRaisedElement.value);
+                setFormattedRaised(amount);
+                updateProgressBar(true);
+            });
+
+            // Initialize formatted input value
+            setFormattedRaised(parseCurrencyInput(progressSlider.value));
 
             // Initialize progress bar
             updateProgressBar();
