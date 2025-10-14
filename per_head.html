@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মাথাপিছু খরচ ক্যালকুলেটর</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+        }
+        .text-taka {
+            /* Ensures numbers in Bengali context look correct */
+            font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
+        }
+        /* Custom colors for Chart slices (optional) */
+        .chart-container {
+            position: relative;
+            height: 50vh;
+            width: 100%;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 sm:p-8 min-h-screen">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">মাথাপিছু খরচ বিশ্লেষণ</h1>
+            <p class="text-lg text-gray-600">প্রতিটি বাজেট আইটেমে শিক্ষার্থীদের অবদান গণনা</p>
+        </header>
+
+        <!-- Configuration Inputs Card -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-blue-100">
+            <h2 class="text-xl font-semibold text-blue-600 mb-4 border-b pb-2">বাজেট কনফিগারেশন</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- Input: Total Budget -->
+                <div>
+                    <label for="totalBudgetInput" class="block text-sm font-medium text-gray-700 mb-1">মোট বাজেট (৳)</label>
+                    <input type="number" id="totalBudgetInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 shadow-sm" placeholder="মোট বাজেট" value="792000">
+                </div>
+
+                <!-- Input: Sponsor Fund -->
+                <div>
+                    <label for="sponsorFundInput" class="block text-sm font-medium text-gray-700 mb-1">স্পন্সর ফান্ড (৳)</label>
+                    <input type="number" id="sponsorFundInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 shadow-sm" placeholder="স্পন্সর ফান্ড" value="400000">
+                </div>
+
+                <!-- Input: Per Head Fee -->
+                <div>
+                    <label for="regFeeInput" class="block text-sm font-medium text-gray-700 mb-1">মাথাপিছু রেজিস্ট্রেশন ফি (৳)</label>
+                    <input type="number" id="regFeeInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 shadow-sm" placeholder="ফি" value="1200">
+                </div>
+            </div>
+
+            <button onclick="calculateAndDisplay()" class="mt-6 w-full md:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 shadow-md shadow-blue-200">
+                হিসাব করুন
+            </button>
+        </div>
+
+        <!-- Summary & Results Section -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-green-100">
+            <h2 class="text-xl font-semibold text-green-600 mb-4 border-b pb-2">হিসাবের সারাংশ</h2>
+            <div id="summary" class="mb-6 grid grid-cols-2 gap-4 text-gray-700">
+                <!-- Summary details will be inserted here -->
+            </div>
+
+            <h2 class="text-xl font-semibold text-green-600 mb-4 border-b pb-2">আইটেম অনুযায়ী শিক্ষার্থীদের মাথাপিছু খরচ</h2>
+
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                খরচ আইটেম
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                মোট খরচ (৳)
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider bg-green-50 rounded-tr-lg">
+                                মাথাপিছু খরচ (৳)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Results will be inserted here -->
+                    </tbody>
+                    <tfoot class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-800">
+                                মোট
+                            </th>
+                            <th id="totalExpense" class="px-6 py-3 text-right text-sm font-semibold text-gray-800">
+                                <!-- Total (7,92,000) -->
+                            </th>
+                            <th id="totalPerHeadCost" class="px-6 py-3 text-right text-sm font-semibold text-green-700 bg-green-100 rounded-br-lg">
+                                <!-- Total Per Head Cost -->
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <p id="error-message" class="text-red-500 text-sm mt-4 hidden">ইনপুট ভ্যালু সঠিক নয়। স্পন্সর ফান্ড মোট বাজেট থেকে বেশি হতে পারবে না, এবং রেজিস্ট্রেশন ফি শূন্য হতে পারবে না।</p>
+        </div>
+
+        <!-- Pie Chart Card - MOVED HERE -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-purple-100">
+            <h2 class="text-xl font-semibold text-purple-600 mb-4 border-b pb-2">মাথাপিছু খরচের বিতরণ (৳1200)</h2>
+            <div class="chart-container">
+                <canvas id="perHeadCostChart"></canvas>
+            </div>
+            <p class="text-sm text-gray-500 mt-4 text-center">পাই চার্টে প্রতিটি বাজেট আইটেমে আপনার ১২০০ টাকা রেজিস্ট্রেশন ফির কত অংশ যাচ্ছে, তা দেখানো হয়েছে।</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to hold the chart instance
+        let perHeadChart = null;
+
+        // All budget data and configuration are here, as requested
+        const EXPENSES_DATA = [
+            { name: "মূল ব্যান্ড", cost: 300000 },
+            { name: "ম্যাজিশিয়ান", cost: 20000 },
+            { name: "ফ্ল্যাশমব", cost: 8000 },
+            { name: "থিম সং প্রোডাকশন", cost: 15000 },
+            { name: "লোকাল ব্যান্ড", cost: 10000 },
+            { name: "সাউন্ড সিস্টেম", cost: 80000 },
+            { name: "লাইটিং ও স্টেজ", cost: 50000 },
+            { name: "এলইডি ডিসপ্লে", cost: 30000 },
+            { name: "ক্যামেরা ও ভিডিওগ্রাফি", cost: 25000 },
+            { name: "অনুষ্ঠান উদ্বোধন", cost: 5000 },
+            { name: "ব্যানার উন্মোচন অনুষ্ঠান", cost: 2000 },
+            { name: "টি-শার্ট", cost: 45000 },
+            { name: "ব্যানার", cost: 26000 },
+            { name: "মার্কেটিং", cost: 10000 },
+            { name: "গ্রাফিতি আর্ট", cost: 10000 },
+            { name: "আলপনা আঁকা", cost: 5000 },
+            { name: "লোগো ডিজাইন", cost: 1000 },
+            { name: "লাঞ্চ", cost: 75000 },
+            { name: "ব্যান্ড আপ্যায়ন", cost: 20000 },
+            { name: "শিক্ষার্থীদের উপহার", cost: 30000 },
+            { name: "ক্রেস্ট", cost: 10000 },
+            { name: "মুদ্রন", cost: 15000 },
+        ];
+
+        // Utility function to format numbers with commas and two decimal places (Bengali style)
+        function formatTaka(number) {
+            return new Intl.NumberFormat('bn-BD', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(number);
+        }
+
+        // Function to generate distinct, BRIGHT colors (UPDATED for vibrancy)
+        function generateColors(count) {
+            const vibrantColors = [
+                '#FF5733', // Bright Red-Orange
+                '#33FF57', // Lime Green
+                '#3357FF', // Bright Blue
+                '#FF33FF', // Fuchsia
+                '#FF9933', // Orange
+                '#33FFCC', // Cyan-Green
+                '#9933FF', // Violet
+                '#FFCC33', // Gold
+                '#33CCFF', // Sky Blue
+                '#CCFF33', // Yellow-Green
+                '#CC33FF', // Magenta
+                '#FF3399', // Pink-Red
+                '#33FF99', // Mint
+                '#99FF33', // Chartreuse
+                '#5733FF', // Indigo
+                '#FF6347', // Tomato
+                '#40E0D0', // Turquoise
+                '#DAA520', // Goldenrod (for contrast)
+                '#8A2BE2', // Blue Violet
+                '#FFD700', // Gold (for contrast)
+                '#ADFF2F', // Green Yellow
+                '#FFA07A'  // Light Salmon
+            ];
+            // Cycle through colors
+            return Array.from({ length: count }, (_, i) => vibrantColors[i % vibrantColors.length]);
+        }
+
+        // Main calculation and display function
+        function calculateAndDisplay() {
+            // 1. Get configuration values from input fields
+            const totalBudget = parseFloat(document.getElementById('totalBudgetInput').value) || 0;
+            const sponsorFund = parseFloat(document.getElementById('sponsorFundInput').value) || 0;
+            const perHeadRegistrationFee = parseFloat(document.getElementById('regFeeInput').value) || 0;
+
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            const summaryDiv = document.getElementById('summary');
+            const totalPerHeadCostElement = document.getElementById('totalPerHeadCost');
+            const totalExpenseElement = document.getElementById('totalExpense');
+            const errorMessage = document.getElementById('error-message');
+
+            // Reset
+            resultsTableBody.innerHTML = '';
+            summaryDiv.innerHTML = '';
+            totalPerHeadCostElement.textContent = '';
+            totalExpenseElement.textContent = '';
+            errorMessage.classList.add('hidden');
+
+            // Validation
+            if (totalBudget <= 0 || sponsorFund > totalBudget || perHeadRegistrationFee <= 0) {
+                errorMessage.classList.remove('hidden');
+
+                // Clear the chart on error
+                if (perHeadChart) {
+                    perHeadChart.destroy();
+                    perHeadChart = null;
+                }
+                return;
+            }
+
+            // 2. Core Calculations
+            const studentFund = totalBudget - sponsorFund;
+            // The ratio (percentage) of the total budget that must be covered by the students
+            const studentShareRatio = studentFund / totalBudget;
+            // The effective number of students based on the collected fund and per-head fee
+            const effectiveStudents = studentFund / perHeadRegistrationFee;
+
+            let totalPerStudentCost = 0;
+            let totalActualExpense = 0;
+
+            const chartLabels = [];
+            const chartData = [];
+            const processedExpenses = [];
+
+            // 3. Process Expenses and Populate Results Table Data
+            EXPENSES_DATA.forEach(item => {
+                totalActualExpense += item.cost;
+
+                // Item Cost (Student Portion) = Item Cost * Student Share Ratio
+                const itemCostStudentPortion = item.cost * studentShareRatio;
+
+                // Per Student Cost = Item Cost (Student Portion) / Effective Students
+                const perStudentCost = itemCostStudentPortion / effectiveStudents; // This should total up to 1200
+
+                totalPerStudentCost += perStudentCost;
+
+                processedExpenses.push({
+                    name: item.name,
+                    cost: item.cost,
+                    perStudentCost: perStudentCost
+                });
+
+                chartLabels.push(item.name);
+                chartData.push(perStudentCost.toFixed(2));
+            });
+
+            // 4. Populate Results Table (DOM)
+            processedExpenses.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition duration-150';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right text-taka">${formatTaka(item.cost)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-700 text-right text-taka bg-green-50">${formatTaka(item.perStudentCost)}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+
+
+            // 5. Update Summary
+            const studentSharePercentage = studentShareRatio * 100;
+            summaryDiv.innerHTML = `
+                <div class="p-3 bg-blue-50 rounded-lg shadow-sm">
+                    <p class="text-xs font-medium text-blue-600">শিক্ষার্থীদের কভার করতে হবে</p>
+                    <p class="text-xl font-bold text-gray-900 text-taka">৳ ${formatTaka(studentFund)}</p>
+                </div>
+                <div class="p-3 bg-blue-50 rounded-lg shadow-sm">
+                    <p class="text-xs font-medium text-blue-600">কার্যকরী ছাত্র সংখ্যা (ফি অনুযায়ী)</p>
+                    <p class="text-xl font-bold text-gray-900 text-taka">${formatTaka(effectiveStudents)} জন</p>
+                </div>
+                <div class="col-span-2 p-3 bg-purple-50 rounded-lg shadow-sm">
+                    <p class="text-xs font-medium text-purple-600">মোট বাজেটে শিক্ষার্থীর অংশের হার</p>
+                    <p class="text-xl font-bold text-gray-900 text-taka">${formatTaka(studentSharePercentage)}%</p>
+                </div>
+            `;
+
+            // 6. Update Footer Totals
+            totalExpenseElement.textContent = `৳ ${formatTaka(totalActualExpense)}`;
+            totalPerHeadCostElement.textContent = `৳ ${formatTaka(totalPerStudentCost)}`;
+
+            // 7. Render Pie Chart
+            renderPerHeadCostChart(chartLabels, chartData);
+        }
+
+        function renderPerHeadCostChart(labels, data) {
+            const ctx = document.getElementById('perHeadCostChart').getContext('2d');
+
+            // Destroy existing chart instance if it exists (important for updates)
+            if (perHeadChart) {
+                perHeadChart.destroy();
+            }
+
+            const backgroundColors = generateColors(labels.length);
+
+            perHeadChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'মাথাপিছু খরচ (৳)',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        hoverOffset: 10,
+                        borderWidth: 1.5,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    family: 'Noto Sans Bengali, Inter',
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += `৳ ${formatTaka(context.parsed)}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        // Title configuration is removed as requested
+                    }
+                }
+            });
+        }
+
+        // Initial calculation on page load
+        window.onload = function() {
+            // Attach event listeners to recalculate on input change and button click
+            document.getElementById('totalBudgetInput').addEventListener('input', calculateAndDisplay);
+            document.getElementById('sponsorFundInput').addEventListener('input', calculateAndDisplay);
+            document.getElementById('regFeeInput').addEventListener('input', calculateAndDisplay);
+
+            // Run initial calculation
+            calculateAndDisplay();
+        };
+
+    </script>
+</body>
+</html>
