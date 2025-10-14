@@ -146,13 +146,17 @@
             { name: "মুদ্রন", cost: 15000 },
         ];
 
-        // Utility function to format numbers with commas and two decimal places (Bengali style)
+        // Utility function to format numbers with commas and
+        // - If number is an integer, show no decimals (e.g., 1200)
+        // - If number has fractional part, show up to 2 decimals (e.g., 12.5 or 12.34)
         function formatTaka(number) {
+            if (number === null || number === undefined || isNaN(number)) return '0';
+            const isInteger = Number(number) % 1 === 0;
             return new Intl.NumberFormat('bn-BD', {
                 style: 'decimal',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(number);
+                minimumFractionDigits: isInteger ? 0 : 0,
+                maximumFractionDigits: isInteger ? 0 : 2
+            }).format(Number(number));
         }
 
         // Function to generate distinct, BRIGHT colors (UPDATED for vibrancy)
@@ -250,7 +254,8 @@
                 });
 
                 chartLabels.push(item.name);
-                chartData.push(perStudentCost.toFixed(2));
+                // Ensure chart data are numeric values (not strings) and avoid forcing .00
+                chartData.push(Number(Number(perStudentCost.toFixed(2))));
             });
 
             // 4. Populate Results Table (DOM)
