@@ -3,6 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Budget Dashboard for tracking income, expenses, and budget allocations.">
+    <meta name="keywords" content="budget, dashboard, income, expenses, finance">
+    <meta name="author" content="Budget Tracker">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chayannito26.github.io/budget/dashboard.html">
+    <meta property="og:title" content="Budget Dashboard">
+    <meta property="og:description" content="Budget Dashboard for tracking income, expenses, and budget allocations.">
+    <meta property="og:image" content="https://chayannito26.github.io/budget/dashboard-preview.png">
+    <meta property="og:site_name" content="Budget Dashboard">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://chayannito26.github.io/budget/dashboard.html">
+    <meta property="twitter:title" content="Budget Dashboard">
+    <meta property="twitter:description" content="Budget Dashboard for tracking income, expenses, and budget allocations.">
+    <meta property="twitter:image" content="https://chayannito26.github.io/budget/dashboard-preview.png">
     <title>Budget Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -72,9 +88,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const budgetUrl = 'https://chayannito26.com/budget/budget-data.json';
-            const expensesUrl = 'https://chayannito26.com/expenses/expenses.json';
-            const incomeUrl = 'https://chayannito26.com/income/revenues.json';
+            const budgetUrl = 'https://raw.githubusercontent.com/chayannito26/budget/refs/heads/main/budget-data.json';
+            const expensesUrl = 'https://raw.githubusercontent.com/chayannito26/expenses/refs/heads/main/expenses.json';
+            const incomeUrl = 'https://raw.githubusercontent.com/chayannito26/income/refs/heads/main/revenues.json';
 
             Promise.all([
                 fetch(budgetUrl).then(res => res.json()),
