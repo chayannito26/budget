@@ -147,7 +147,7 @@
 
                     tableContent += `
                         <tr>
-                            <td>${item.name_en} <span class="text-muted">(${item.name_bn})</span></td>
+                            <td>${item.name_en}</td>
                             <td>${formatCurrency(item.cost)}</td>
                             <td>${formatCurrency(spent)}</td>
                             <td class="${remaining < 0 ? 'negative' : ''}">${formatCurrency(remaining)}</td>
@@ -182,7 +182,7 @@
             }
 
             function formatCurrency(amount) {
-                return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(amount);
+                return `৳${amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
             }
         });
     </script>
