@@ -5,7 +5,7 @@
     { "name_bn": "লোকাল ব্যান্ড", "name_en": "Local Band", "cost": 8000 },
     { "name_bn": "সাউন্ড সিস্টেম", "name_en": "Sound System", "cost": 100000 },
     { "name_bn": "লাইটিং ও স্টেজ", "name_en": "Lighting & Stage", "cost": 60000 },
-    { "name_bn": "এলইডি ডিসপ্লে", "name_en": "LED Display", "cost": 25000 },
+    { "name_bn": "ব্যান্ড আতিথেয়তা", "name_en": "Band Hospitality", "cost": 25000 },
     { "name_bn": "ক্যামেরা ও ভিডিওগ্রাফি", "name_en": "Camera & Videography", "cost": 25000 },
     { "name_bn": "অনুষ্ঠান উদ্বোধন", "name_en": "Opening Ceremony", "cost": 5000 },
     { "name_bn": "ব্যানার উন্মোচন অনুষ্ঠান", "name_en": "Banner Unveiling Ceremony", "cost": 2000 },

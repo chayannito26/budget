@@ -446,14 +446,14 @@
                         return [ {
                             category: 'Expenses',
                             icon: 'fas fa-list',
-                            items: items.map(i => ({ name: i.name, cost: i.cost }))
+                            items: items.map(i => ({ name: i.name_en, cost: i.cost }))
                         } ];
                     }
                     const map = new Map();
                     items.forEach(i => {
                         const cat = i.category || 'Expenses';
                         if (!map.has(cat)) map.set(cat, { category: cat, icon: i.icon || 'fas fa-list', items: [] });
-                        map.get(cat).items.push({ name: i.name, cost: i.cost });
+                        map.get(cat).items.push({ name: i.name_en, cost: i.cost });
                     });
                     return Array.from(map.values());
                 }
@@ -484,7 +484,7 @@
                     const rows = budgetItems
                         .map(item => `
                             <tr>
-                                <td>${item.name}</td>
+                                <td>${item.name_en}</td>
                                 <td class="item-cost-cell">${formatCurrency(item.cost)}</td>
                             </tr>
                         `)

@@ -259,12 +259,12 @@
                 totalPerStudentCost += perStudentCost;
 
                 processedExpenses.push({
-                    name: item.name,
+                    name: item.name_bn,
                     cost: item.cost,
                     perStudentCost: perStudentCost
                 });
 
-                chartLabels.push(item.name);
+                chartLabels.push(item.name_bn);
                 // Ensure chart data are numeric values (not strings) and avoid forcing .00
                 chartData.push(Number(Number(perStudentCost.toFixed(2))));
             });
