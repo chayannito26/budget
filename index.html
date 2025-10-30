@@ -381,19 +381,7 @@
             <h2>Total Estimated Budget</h2>
             <p class="total-amount" id="total-amount">0</p>
             
-            <div class="progress-section">
-                <div class="progress-header">
-                    <h3>Budget Tier</h3>
-                    <div class="tier-indicator">
-                        Budget: <span class="tier-name" id="budget-amount">৳ 7,00,000</span>
-                    </div>
-                </div>
-
-                <div class="tier-select-wrapper">
-                    <label for="tier-select" class="hidden">Select Tier</label>
-                    <select id="tier-select" class="tier-select" aria-label="Select budget tier"></select>
-                </div>
-            </div>
+            <!-- Using external budget data (no tiering). Total shows computed sum of expense items. -->
         </section>
 
         <section class="budget-breakdown">
@@ -434,145 +422,80 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Tier Configuration (adjustable)
-            const tierConfig = [
-                { tier: 2, budget: 700000, name: '7.5 Lakh' },
-                { tier: 1, budget: 600000, name: '6 Lakh' },
-            ];
+                // Load budget items from external JSON (no tiering)
+                let budgetItems = [];
 
-            // Shared Data Source with tier-specific costs
-            // Format: { name: string, tiers: { tier_number: cost } }
-            // If cost is 0, the item is omitted at that tier
-            const budgetData = [
-                {
-                    category: 'Performance & Talent',
-                    icon: 'fas fa-microphone-alt',
-                    items: [
-                        { name: 'Main Band', tiers: {1: 280000, 2: 280000} },
-                        { name: 'Magician', tiers: {1: 0, 2: 20000} },
-                        { name: 'Flashmob', tiers: {1: 8000, 2: 8000} },
-                        { name: 'Theme Song Production', tiers: {1: 15000, 2: 15000} },
-                        { name: 'Local Band', tiers: {1: 10000, 2: 10000} },
-                    ],
-                },
-                {
-                    category: 'Production & Logistics',
-                    icon: 'fas fa-cogs',
-                    items: [
-                        { name: 'Sound System', tiers: {1: 50000, 2: 70000} },
-                        { name: 'Lighting & Stage', tiers: {1: 50000, 2: 50000} },
-                        { name: 'LED Display', tiers: {1: 0, 2: 30000} },
-                        { name: 'Camera & Videography', tiers: {1: 25000, 2: 25000} },
-                        { name: 'Program Opening', tiers: {1: 5000, 2: 5000} },
-                        { name: 'Banner Reveal', tiers: {1: 2000, 2: 2000} },
-                    ],
-                },
-                {
-                    category: 'Marketing & Branding',
-                    icon: 'fas fa-bullhorn',
-                    items: [
-                        { name: 'T-shirts / Shirts', tiers: {1: 31000, 2: 43000} },
-                        { name: 'Banners', tiers: {1: 26000, 2: 26000} },
-                        { name: 'General Marketing', tiers: {1: 5000, 2: 10000} },
-                        { name: 'Graffiti Art', tiers: {1: 5000, 2: 10000} },
-                        { name: 'Alpona Drawing', tiers: {1: 0, 2: 5000} },
-                        { name: 'Logo Design', tiers: {1: 1000, 2: 1000} },
-                    ],
-                },
-                {
-                    category: 'Hospitality & Participants',
-                    icon: 'fas fa-users',
-                    items: [
-                        { name: 'Lunch', tiers: {1: 52000, 2: 65000} },
-                        { name: 'Band Food+Stay', tiers: {1: 10000, 2: 20000} },
-                        { name: 'Student Gifts', tiers: {1: 0, 2: 25000} },
-                        { name: 'Volunteer T-Shirt', tiers: {1: 1400, 2: 1400} },
-                        { name: 'Crest', tiers: {1: 8000, 2: 10000} },
-                    ],
-                },
-                {
-                    category: 'Administration & Printing',
-                    icon: 'fas fa-print',
-                    items: [
-                        { name: 'Student Entry Coupon', tiers: {1: 5000, 2: 7000} },
-                        { name: 'Entry Pass Printing', tiers: {1: 2100, 2: 2100} },
-                        { name: 'Invitation Card Printing', tiers: {1: 600, 2: 600} },
-                        { name: 'Committee ID Cards', tiers: {1: 3500, 2: 3500} },
-                        { name: 'Volunteer ID Cards', tiers: {1: 1500, 2: 1500} },
-                    ],
-                },
-            ];
+                const formatCurrency = (num) => '৳ ' + Number(num || 0).toLocaleString('en-IN');
 
-            // Current tier state
-            let currentTier = 2;
-
-            // Formatting helper
-            const formatCurrency = (num) => '৳ ' + num.toLocaleString('en-IN');
-
-            // Find the appropriate tier based on funds raised
-            function getTierFromAmount(amount) {
-                // Find the closest lower tier
-                for (let i = 0; i < tierConfig.length; i++) {
-                    if (amount >= tierConfig[i].budget) {
-                        return tierConfig[i];
+                async function loadBudgetItems() {
+                    try {
+                        const res = await fetch('./budget-data.json');
+                        if (!res.ok) throw new Error('Failed to fetch budget-data.json');
+                        budgetItems = await res.json();
+                    } catch (err) {
+                        console.error('Error loading budget items:', err);
+                        budgetItems = [];
                     }
                 }
-                // If less than lowest tier, return lowest tier
-                return tierConfig[tierConfig.length - 1];
-            }
 
-            // Get cost for an item at a specific tier
-            function getItemCost(item, tier) {
-                return item.tiers[tier] || 0;
-            }
+                // Group flat items into categories if category present, otherwise one general category
+                function groupedItems(items) {
+                    // If items have a 'category' property, group by it. Otherwise return a single group.
+                    const hasCategory = items.some(i => i.category);
+                    if (!hasCategory) {
+                        return [ {
+                            category: 'Expenses',
+                            icon: 'fas fa-list',
+                            items: items.map(i => ({ name: i.name, cost: i.cost }))
+                        } ];
+                    }
+                    const map = new Map();
+                    items.forEach(i => {
+                        const cat = i.category || 'Expenses';
+                        if (!map.has(cat)) map.set(cat, { category: cat, icon: i.icon || 'fas fa-list', items: [] });
+                        map.get(cat).items.push({ name: i.name, cost: i.cost });
+                    });
+                    return Array.from(map.values());
+                }
 
-            // Render Card View from data
-            function renderCardView() {
-                const cardView = document.getElementById('card-view');
-                const html = budgetData.map(cat => {
-                    const visibleItems = cat.items.filter(item => getItemCost(item, currentTier) > 0);
-                    if (visibleItems.length === 0) return '';
-                    
-                    return `
-                    <div class="category-card">
-                        <div class="category-header"><i class="${cat.icon}"></i><h3>${cat.category}</h3></div>
-                        <ul class="budget-list">
-                            ${visibleItems.map(item => {
-                                const cost = getItemCost(item, currentTier);
-                                return `<li class="budget-item"><span class="item-name">${item.name}</span> <span class="item-cost">${formatCurrency(cost)}</span></li>`;
-                            }).join('')}
-                        </ul>
-                    </div>
-                `;
-                }).join('');
-                cardView.innerHTML = html;
-            }
-
-            // Render Table View from data (flattened)
-            function renderTableView() {
-                const tbody = document.getElementById('table-body');
-                const rows = budgetData
-                    .flatMap(cat => cat.items.map(item => ({ ...item })))
-                    .filter(item => getItemCost(item, currentTier) > 0)
-                    .map(item => {
-                        const cost = getItemCost(item, currentTier);
+                // Render Card View from data
+                function renderCardView() {
+                    const cardView = document.getElementById('card-view');
+                    const groups = groupedItems(budgetItems);
+                    const html = groups.map(cat => {
+                        if (!cat.items || cat.items.length === 0) return '';
                         return `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td class="item-cost-cell">${formatCurrency(cost)}</td>
-                        </tr>
+                        <div class="category-card">
+                            <div class="category-header"><i class="${cat.icon}"></i><h3>${cat.category}</h3></div>
+                            <ul class="budget-list">
+                                ${cat.items.map(item => {
+                                    return `<li class="budget-item"><span class="item-name">${item.name}</span> <span class="item-cost">${formatCurrency(item.cost)}</span></li>`;
+                                }).join('')}
+                            </ul>
+                        </div>
                     `;
-                    })
-                    .join('');
-                tbody.innerHTML = rows;
-            }
+                    }).join('');
+                    cardView.innerHTML = html;
+                }
 
-            // Total from data based on current tier
-            function computeTotalFromData() {
-                return budgetData.reduce((sum, cat) => 
-                    sum + cat.items.reduce((s, i) => s + getItemCost(i, currentTier), 0), 0
-                );
-            }
+                // Render Table View from data (flattened)
+                function renderTableView() {
+                    const tbody = document.getElementById('table-body');
+                    const rows = budgetItems
+                        .map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td class="item-cost-cell">${formatCurrency(item.cost)}</td>
+                            </tr>
+                        `)
+                        .join('');
+                    tbody.innerHTML = rows;
+                }
+
+                // Total from data
+                function computeTotalFromData() {
+                    return budgetItems.reduce((s, i) => s + (Number(i.cost) || 0), 0);
+                }
 
             // --- Animated Counter ---
             const totalAmountElement = document.getElementById('total-amount');
@@ -592,7 +515,7 @@
                 window.requestAnimationFrame(step);
             }
 
-            // Update all displays based on current tier
+            // Update all displays based on loaded data
             function updateDisplays(animate = false) {
                 renderCardView();
                 renderTableView();
@@ -604,47 +527,11 @@
                 }
             }
 
-            // --- Tier Dropdown Logic ---
-
-            const budgetAmountElement = document.getElementById('budget-amount');
-            const tierSelect = document.getElementById('tier-select');
-
-            // Populate tier dropdown from tierConfig (keep it compact and simple)
-            function populateTierSelect() {
-                // Clear
-                tierSelect.innerHTML = '';
-                // Sort tiers by tier number descending so highest appears first
-                const sorted = [...tierConfig].sort((a,b) => b.tier - a.tier);
-                sorted.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t.tier;
-                    opt.textContent = t.name || `Tier ${t.tier}`;
-                    tierSelect.appendChild(opt);
-                });
-            }
-
-            // Handle tier change
-            tierSelect.addEventListener('change', () => {
-                const selected = parseInt(tierSelect.value, 10);
-                if (!isNaN(selected) && selected !== currentTier) {
-                    currentTier = selected;
-                    // Update displayed budget amount for the selected tier
-                    const cfg = tierConfig.find(tc => tc.tier === currentTier);
-                    if (cfg && budgetAmountElement) budgetAmountElement.textContent = formatCurrency(cfg.budget);
-                    updateDisplays(false);
-                }
-            });
-
-            // Initialize the select and set default
-            populateTierSelect();
-            // Ensure the select reflects the initial currentTier
-            tierSelect.value = String(currentTier);
-            // Update shown budget amount
-            const initialCfg = tierConfig.find(tc => tc.tier === currentTier) || tierConfig[0];
-            if (initialCfg && budgetAmountElement) budgetAmountElement.textContent = formatCurrency(initialCfg.budget);
-
-            // Render both views initially
-            updateDisplays(true);
+            // Load data and initialize views
+            (async function init() {
+                await loadBudgetItems();
+                updateDisplays(true);
+            })();
 
             const observer = new IntersectionObserver(entries => {
                 entries.forEach(entry => {
