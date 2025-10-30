@@ -149,9 +149,9 @@
                 const toRaise = Math.max(0, budget - income);
 
                 const cards = [
-                    { title: 'Total Income', value: income, isCurrency: true, color: 'positive' },
+                    { title: 'Total Raised', value: income, isCurrency: true, color: 'positive' },
                     { title: 'Total Spent', value: spent, isCurrency: true, color: 'negative' },
-                    { title: 'Net Balance', value: balance, isCurrency: true, color: balance >= 0 ? 'positive' : 'negative' },
+                    { title: 'Fund Balance', value: balance, isCurrency: true, color: balance >= 0 ? 'positive' : 'negative' },
                     { title: 'Total Budget', value: budget, isCurrency: true, color: 'text-primary' },
                     { title: 'Budget Remaining', value: budgetRemaining, isCurrency: true, color: budgetRemaining >= 0 ? 'positive' : 'negative' },
                     { title: 'Funding Needed', value: toRaise, isCurrency: true, color: toRaise > 0 ? 'text-warning' : 'positive' }
