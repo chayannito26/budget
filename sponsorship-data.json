@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Radhuni",
+    "status": "Received",
+    "amount": 300000,
+    "liaison": "Shezan"
+  },
+  {
+    "name": "Shimul Biswas",
+    "status": "Received",
+    "amount": 27000,
+    "liaison": "Wasi"
+  },
+  {
+    "name": "Noyon Thikadar",
+    "status": "Approached",
+    "amount": 50000,
+    "liaison": "Shanta"
+  },
+  {
+    "name": "Coaching Center",
+    "status": "Approached",
+    "amount": 40000,
+    "liaison": "All"
+  },
+  {
+    "name": "Prince",
+    "status": "Approached",
+    "amount": 10000,
+    "liaison": "Shezan Roddro"
+  },
+  {
+    "name": "Clinic",
+    "status": "To Be Approached",
+    "amount": 40000,
+    "liaison": "Maruf Roddro"
+  },
+  {
+    "name": "Chennai Express",
+    "status": "To Be Approached",
+    "amount": 5000,
+    "liaison": "Shezan Wasi"
+  },
+  {
+    "name": "Online Corner",
+    "status": "Talha",
+    "amount": 10000,
+    "liaison": "Susan Davis"
+  },
+  {
+    "name": "Sohani",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  }
+]

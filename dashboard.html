@@ -54,6 +54,57 @@
             color: #198754;
         }
 
+        /* Sponsorship Modal Styles */
+        .modal-lg {
+            max-width: 80%;
+        }
+        .sponsorship-dashboard-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .sponsorship-counter-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            flex-grow: 1;
+        }
+        .sponsorship-counter-card h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .sponsorship-counter-card p {
+            margin: 10px 0 5px 0;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .sponsorship-counter-card span {
+            font-size: 1em;
+            color: #555;
+        }
+        .sponsorship-tables {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .sponsorship-category {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sponsorship-category h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
             .container { padding-top: 1rem; padding-bottom: 1rem; }
@@ -86,6 +137,12 @@
             <!-- Summary cards will be injected here -->
         </div>
 
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sponsorshipModal">
+                View Sponsorship Dashboard
+            </button>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">
@@ -109,6 +166,79 @@
         </div>
     </div>
 
+    <!-- Sponsorship Modal -->
+    <div class="modal fade" id="sponsorshipModal" tabindex="-1" aria-labelledby="sponsorshipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sponsorshipModalLabel">Sponsorship Dashboard</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="sponsorship-dashboard-container">
+                        <div class="sponsorship-counter-card">
+                            <h2>Received</h2>
+                            <p id="received-count">0</p>
+                            <span id="received-amount">$0</span>
+                        </div>
+                        <div class="sponsorship-counter-card">
+                            <h2>Approached</h2>
+                            <p id="approached-count">0</p>
+                            <span id="approached-amount">$0</span>
+                        </div>
+                        <div class="sponsorship-counter-card">
+                            <h2>To Be Approached</h2>
+                            <p id="to-be-approached-count">0</p>
+                            <span id="to-be-approached-amount">$0</span>
+                        </div>
+                    </div>
+                    <div class="sponsorship-tables">
+                        <div class="sponsorship-category">
+                            <h2>Received</h2>
+                            <table class="table" id="received-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sponsor</th>
+                                        <th>Amount</th>
+                                        <th>Liaison</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="sponsorship-category">
+                            <h2>Approached</h2>
+                            <table class="table" id="approached-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sponsor</th>
+                                        <th>Amount</th>
+                                        <th>Liaison</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="sponsorship-category">
+                            <h2>To Be Approached</h2>
+                            <table class="table" id="to-be-approached-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sponsor</th>
+                                        <th>Amount</th>
+                                        <th>Liaison</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const budgetUrl = 'https://raw.githubusercontent.com/chayannito26/budget/refs/heads/main/budget-data.json';
@@ -222,6 +352,53 @@
 
             function formatCurrency(amount) {
                 return `৳${amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+            }
+
+            // Sponsorship data loading
+            const sponsorshipUrl = 'sponsorship-data.json';
+            fetch(sponsorshipUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const received = data.filter(s => s.status === 'Received');
+                    const approached = data.filter(s => s.status === 'Approached');
+                    const toBeApproached = data.filter(s => s.status === 'To Be Approached');
+
+                    document.getElementById('received-count').textContent = received.length;
+                    document.getElementById('approached-count').textContent = approached.length;
+                    document.getElementById('to-be-approached-count').textContent = toBeApproached.length;
+
+                    document.getElementById('received-amount').textContent = `৳${sumSponsorshipAmounts(received).toLocaleString()}`;
+                    document.getElementById('approached-amount').textContent = `৳${sumSponsorshipAmounts(approached).toLocaleString()}`;
+                    document.getElementById('to-be-approached-amount').textContent = `৳${sumSponsorshipAmounts(toBeApproached).toLocaleString()}`;
+
+                    populateSponsorshipTable('received-table', received);
+                    populateSponsorshipTable('approached-table', approached);
+                    populateSponsorshipTable('to-be-approached-table', toBeApproached);
+                })
+                .catch(error => console.error('Error fetching sponsorship data:', error));
+
+            function sumSponsorshipAmounts(data) {
+                return data.reduce((sum, item) => sum + item.amount, 0);
+            }
+
+            function populateSponsorshipTable(tableId, data) {
+                const tableBody = document.querySelector(`#${tableId} tbody`);
+                tableBody.innerHTML = ''; // Clear existing data
+
+                if (data.length === 0) {
+                    const row = tableBody.insertRow();
+                    const cell = row.insertCell();
+                    cell.colSpan = 3;
+                    cell.textContent = 'No sponsorships in this category.';
+                    cell.style.textAlign = 'center';
+                } else {
+                    data.forEach(item => {
+                        const row = tableBody.insertRow();
+                        row.insertCell().textContent = item.name;
+                        row.insertCell().textContent = `৳${item.amount.toLocaleString()}`;
+                        row.insertCell().textContent = item.liaison;
+                    });
+                }
             }
         });
     </script>
