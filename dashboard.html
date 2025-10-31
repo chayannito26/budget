@@ -199,6 +199,11 @@
                             <p id="to-be-approached-count">0</p>
                             <span id="to-be-approached-amount">$0</span>
                         </div>
+                        <div class="sponsorship-counter-card">
+                            <h2>Pending</h2>
+                            <p id="pending-count">0</p>
+                            <span id="pending-amount">$0</span>
+                        </div>
                     </div>
                     <div class="sponsorship-tables">
                         <div class="sponsorship-category">
@@ -378,6 +383,10 @@
                     document.getElementById('received-amount').textContent = `৳${sumSponsorshipAmounts(received).toLocaleString()}`;
                     document.getElementById('approached-amount').textContent = `৳${sumSponsorshipAmounts(approached).toLocaleString()}`;
                     document.getElementById('to-be-approached-amount').textContent = `৳${sumSponsorshipAmounts(toBeApproached).toLocaleString()}`;
+
+                    const pending = [...approached, ...toBeApproached];
+                    document.getElementById('pending-count').textContent = pending.length;
+                    document.getElementById('pending-amount').textContent = `৳${sumSponsorshipAmounts(pending).toLocaleString()}`;
 
                     populateSponsorshipTable('received-table', received);
                     populateSponsorshipTable('approached-table', approached);
