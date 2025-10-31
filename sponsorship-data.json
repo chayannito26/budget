@@ -18,7 +18,19 @@
     "liaison": "Shanta"
   },
   {
+    "name": "Bipul Pathshala",
+    "status": "Approached",
+    "amount": 20000,
+    "liaison": "All"
+  },
+    {
     "name": "Coaching Center",
+    "status": "To Be Approached",
+    "amount": 20000,
+    "liaison": "All"
+  },
+  {
+    "name": "Wasi",
     "status": "Approached",
     "amount": 40000,
     "liaison": "All"
@@ -29,11 +41,29 @@
     "amount": 10000,
     "liaison": "Shezan Roddro"
   },
+    {
+    "name": "Shoron",
+    "status": "Approached",
+    "amount": 5000,
+    "liaison": "Shezan"
+  },
+    {
+    "name": "Raisa",
+    "status": "Approached",
+    "amount": 5000,
+    "liaison": "Mittika"
+  },
   {
     "name": "Clinic",
     "status": "To Be Approached",
     "amount": 40000,
     "liaison": "Maruf Roddro"
+  },
+  {
+    "name": "Prial",
+    "status": "To Be Approached",
+    "amount": 10000,
+    "liaison": "Shezan"
   },
   {
     "name": "Chennai Express",
@@ -43,12 +73,24 @@
   },
   {
     "name": "Online Corner",
-    "status": "Talha",
+    "status": "To Be Approached",
     "amount": 10000,
-    "liaison": "Susan Davis"
+    "liaison": "Talha"
   },
   {
     "name": "Sohani",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  },
+  {
+    "name": "Rana Biswas",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  },
+  {
+    "name": "Mahtab Biswas",
     "status": "To Be Approached",
     "amount": 0,
     "liaison": "None"
