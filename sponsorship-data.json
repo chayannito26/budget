@@ -21,7 +21,7 @@
     "name": "Bipul Pathshala",
     "status": "Approached",
     "amount": 20000,
-    "liaison": "All"
+    "liaison": "Nafiz Anam"
   },
     {
     "name": "Coaching Center",
@@ -33,7 +33,7 @@
     "name": "Wasi",
     "status": "Approached",
     "amount": 40000,
-    "liaison": "All"
+    "liaison": "Wasi"
   },
   {
     "name": "Prince",
@@ -61,7 +61,7 @@
   },
   {
     "name": "Prial",
-    "status": "To Be Approached",
+    "status": "Approached",
     "amount": 10000,
     "liaison": "Shezan"
   },
@@ -85,6 +85,24 @@
   },
   {
     "name": "Rana Biswas",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  },
+  {
+    "name": "Monir",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  },
+  {
+    "name": "Saddam",
+    "status": "To Be Approached",
+    "amount": 0,
+    "liaison": "None"
+  },
+  {
+    "name": "Johnny Store",
     "status": "To Be Approached",
     "amount": 0,
     "liaison": "None"

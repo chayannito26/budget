@@ -1,5 +1,6 @@
 [
     { "name_bn": "মূল ব্যান্ড", "name_en": "Main Band", "cost": 280000 },
+    { "name_bn": "দ্বিতীয় ব্যান্ড", "name_en": "Second Band", "cost": 140000 },
     { "name_bn": "ফ্ল্যাশমব", "name_en": "Flashmob", "cost": 8000 },
     { "name_bn": "থিম সং প্রোডাকশন", "name_en": "Theme Song Production", "cost": 15000 },
     { "name_bn": "লোকাল ব্যান্ড", "name_en": "Local Band", "cost": 8000 },
