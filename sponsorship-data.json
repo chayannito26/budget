@@ -122,7 +122,13 @@
   {
     "name": "Rivi",
     "status": "Approached",
-    "amount": 5,
+    "amount": 5000,
+    "liaison": "None"
+  },
+    {
+    "name": "Phone Exchange",
+    "status": "To Be Approached",
+    "amount": 5000,
     "liaison": "None"
   }
 ]
