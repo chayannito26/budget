@@ -54,6 +54,45 @@
             color: #198754;
         }
 
+        /* Participant Calculator Styles */
+        .participant-calculator {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .participant-calculator h5 {
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .participant-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .slider-container {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .slider-container input[type="range"] {
+            width: 100%;
+        }
+        .participant-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .participant-input-wrapper label {
+            margin: 0;
+            font-weight: 600;
+        }
+        .participant-input-wrapper input[type="number"] {
+            width: 100px;
+            text-align: center;
+        }
+
         /* Sponsorship Modal Styles */
         .modal-lg {
             max-width: 80%;
@@ -140,6 +179,20 @@
 <body>
     <div class="container py-5">
         <h1 class="text-center mb-5">Budget Dashboard</h1>
+
+        <!-- Participant Calculator -->
+        <div class="participant-calculator">
+            <h5>Adjust for Number of Participants (<span id="participant-count">400</span>)</h5>
+            <div class="participant-controls">
+                <div class="slider-container">
+                    <input type="range" class="form-range" min="100" max="500" value="400" id="participant-slider" aria-label="Number of participants slider">
+                </div>
+                <div class="participant-input-wrapper">
+                    <label for="participant-input">Participants:</label>
+                    <input type="number" class="form-control" min="100" max="500" value="400" id="participant-input" aria-label="Number of participants input">
+                </div>
+            </div>
+        </div>
 
         <div class="row" id="summary-cards">
             <!-- Summary cards will be injected here -->
@@ -258,32 +311,78 @@
             const expensesUrl = 'https://raw.githubusercontent.com/chayannito26/expenses/refs/heads/main/expenses.json';
             const incomeUrl = 'https://raw.githubusercontent.com/chayannito26/income/refs/heads/main/revenues.json';
 
+            let originalBudgetData = [];
+            let currentBudgetData = [];
+            let expensesData = {};
+            let totalIncome = 0;
+
+            const participantSlider = document.getElementById('participant-slider');
+            const participantInput = document.getElementById('participant-input');
+            const participantCountSpan = document.getElementById('participant-count');
+
+            function calculateDynamicBudget(participantCount) {
+                const dynamicBudget = JSON.parse(JSON.stringify(originalBudgetData));
+                dynamicBudget.forEach(item => {
+                    if (item.per_unit_cost) {
+                        if (item.name_en === 'T-shirt') {
+                            item.cost = participantCount * item.per_unit_cost;
+                        } else if (item.name_en === 'Lunch') {
+                            item.cost = (participantCount + 100) * item.per_unit_cost;
+                        }
+                    }
+                });
+                return dynamicBudget;
+            }
+
+            function updateDisplay(participantCount) {
+                currentBudgetData = calculateDynamicBudget(participantCount);
+                participantCountSpan.textContent = participantCount;
+
+                const totalBudget = currentBudgetData.reduce((sum, item) => sum + item.cost, 0);
+                const totalSpent = Object.values(expensesData).reduce((sum, amount) => sum + amount, 0);
+
+                renderSummary(totalIncome, totalSpent, totalBudget);
+                renderTable(currentBudgetData, expensesData);
+            }
+
+            function handleParticipantChange(event) {
+                const newCount = parseInt(event.target.value, 10);
+                if (isNaN(newCount) || newCount < 100 || newCount > 500) return;
+
+                participantSlider.value = newCount;
+                participantInput.value = newCount;
+                
+                updateDisplay(newCount);
+            }
+
             Promise.all([
                 fetch(budgetUrl).then(res => res.json()),
                 fetch(expensesUrl).then(res => res.json()),
                 fetch(incomeUrl).then(res => res.json())
-            ]).then(([budgetData, expensesData, incomeData]) => {
-                // Process data
-                const totalIncome = incomeData.reduce((sum, item) => sum + item.amount, 0);
-                const totalBudget = budgetData.reduce((sum, item) => sum + item.cost, 0);
+            ]).then(([budgetData, expenses, incomeData]) => {
+                // Store original budget data
+                originalBudgetData = budgetData;
                 
-                const expensesByCategory = expensesData.reduce((acc, expense) => {
+                // Process income
+                totalIncome = incomeData.reduce((sum, item) => sum + item.amount, 0);
+                
+                // Process expenses by category
+                expensesData = expenses.reduce((acc, expense) => {
                     acc[expense.type] = (acc[expense.type] || 0) + expense.amount;
                     return acc;
                 }, {});
 
-                const totalSpent = Object.values(expensesByCategory).reduce((sum, amount) => sum + amount, 0);
-
-                // Render summary cards
-                renderSummary(totalIncome, totalSpent, totalBudget);
-
-                // Render budget table
-                renderTable(budgetData, expensesByCategory);
+                // Initial display with default participant count
+                updateDisplay(parseInt(participantInput.value, 10));
 
             }).catch(error => {
                 console.error('Error fetching budget data:', error);
                 document.getElementById('budget-table-body').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading data. Please try again later.</td></tr>';
             });
+
+            // Event listeners for participant calculator
+            participantSlider.addEventListener('input', handleParticipantChange);
+            participantInput.addEventListener('change', handleParticipantChange);
 
             function renderSummary(income, spent, budget) {
                 const summaryContainer = document.getElementById('summary-cards');
