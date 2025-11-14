@@ -14,7 +14,7 @@
   {
     "name": "Noyon Thikadar",
     "status": "Approached",
-    "amount": 50000,
+    "amount": 40000,
     "liaison": "Shanta"
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "Wasi",
     "status": "Approached",
-    "amount": 40000,
+    "amount": 0,
     "liaison": "Wasi"
   },
   {
@@ -47,16 +47,10 @@
     "amount": 5000,
     "liaison": "Shezan"
   },
-    {
-    "name": "Raisa",
-    "status": "Approached",
-    "amount": 5000,
-    "liaison": "Mittika"
-  },
   {
     "name": "Clinic",
     "status": "To Be Approached",
-    "amount": 40000,
+    "amount": 30000,
     "liaison": "Roddro"
   },
   {
