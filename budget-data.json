@@ -62,9 +62,9 @@
     {
         "name_bn": "টি-শার্ট",
         "name_en": "T-shirt",
-        "cost": 40000,
+        "cost": 25000,
         "per_unit_cost": 100,
-        "notes": "Printing shirts for 400 registrants, 40-60 ratio for female-male and 140tk for female 70tk for male"
+        "notes": "Printing shirts for 250 registrants, 40-60 ratio for female-male and 140tk for female 70tk for male"
     },
     {
         "name_bn": "ব্যানার",
@@ -90,9 +90,9 @@
     {
         "name_bn": "লাঞ্চ",
         "name_en": "Lunch",
-        "cost": 65000,
+        "cost": 45500,
         "per_unit_cost": 130,
-        "notes": "Lunch for around 500 participants at the venue each costing 130tk for food+packaging+water+customized packet"
+        "notes": "Lunch for around 350 participants at the venue each costing 130tk for food+packaging+water+customized packet"
     },
     {
         "name_bn": "ক্রেস্ট",

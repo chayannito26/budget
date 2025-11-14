@@ -33,8 +33,16 @@
             font-size: 0.8rem;
         }
         .progress-bar {
+            color: #000;
             font-weight: bold;
         }
+    /* Slightly deeper custom progress bar colors for better contrast with black text */
+    .progress-bar.bg-soft-danger { background-color: #ff9b9b; }
+    .progress-bar.bg-soft-warning { background-color: #ffd591; }
+    .progress-bar.bg-soft-info { background-color: #9fd6ff; }
+    .progress-bar.bg-soft-success { background-color: #b9f0c9; }
+    /* Purple-ish color for exactly 100% progress */
+    .progress-bar.bg-soft-overflow { background-color: #b893ff; }
         .table-responsive {
             margin-top: 2rem;
         }
@@ -186,14 +194,14 @@
 
         <!-- Participant Calculator -->
         <div class="participant-calculator">
-            <h5>Adjust for Number of Participants (<span id="participant-count">400</span>)</h5>
+            <h5>Adjust for Number of Participants (<span id="participant-count">250</span>)</h5>
             <div class="participant-controls">
                 <div class="slider-container">
-                    <input type="range" class="form-range" min="100" max="500" value="400" id="participant-slider" aria-label="Number of participants slider">
+                    <input type="range" class="form-range" min="100" max="500" value="250" id="participant-slider" aria-label="Number of participants slider">
                 </div>
                 <div class="participant-input-wrapper">
                     <label for="participant-input">Participants:</label>
-                    <input type="number" class="form-control" min="100" max="500" value="400" id="participant-input" aria-label="Number of participants input">
+                    <input type="number" class="form-control" min="100" max="500" value="250" id="participant-input" aria-label="Number of participants input">
                 </div>
             </div>
         </div>
@@ -456,10 +464,13 @@
             }
 
             function getProgressBarColor(percentage) {
+                // Keep >100% as strong danger. Use a purple-ish soft color for exactly 100%.
                 if (percentage > 100) return 'bg-danger';
-                if (percentage > 80) return 'bg-warning';
-                if (percentage > 50) return 'bg-info';
-                return 'bg-success';
+                // Allow a tiny tolerance for floating point calculations when matching 100%
+                if (Math.abs(percentage - 100) < 1e-6) return 'bg-soft-overflow';
+                if (percentage > 80) return 'bg-soft-warning';
+                if (percentage > 50) return 'bg-soft-info';
+                return 'bg-soft-success';
             }
 
             function formatCurrency(amount) {
