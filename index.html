@@ -122,6 +122,50 @@
             white-space: nowrap;
         }
 
+        /* Participant Calculator */
+        .participant-calculator {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .participant-calculator label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .participant-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .slider-container {
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        #participant-slider {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #participant-input {
+            width: 80px;
+            background: rgba(0,0,0,0.3);
+            color: var(--primary-text);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+
         /* Compact Tier Dropdown */
         .tier-select-wrapper {
             margin-top: 1.5rem;
@@ -440,7 +484,15 @@
             <h2>Total Estimated Budget</h2>
             <p class="total-amount" id="total-amount">0</p>
             
-            <!-- Using external budget data (no tiering). Total shows computed sum of expense items. -->
+            <div class="participant-calculator">
+                <label for="participant-slider">Adjust for Number of Participants (<span id="participant-count">400</span>)</label>
+                <div class="participant-controls">
+                    <div class="slider-container">
+                        <input type="range" min="100" max="500" value="400" id="participant-slider" aria-label="Number of participants slider">
+                    </div>
+                    <input type="number" min="100" max="500" value="400" id="participant-input" aria-label="Number of participants input">
+                </div>
+            </div>
         </section>
 
         <section class="budget-breakdown">
@@ -481,203 +533,184 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-                // Load budget items from external JSON (no tiering)
-                let budgetItems = [];
+            let originalBudgetItems = [];
+            let currentBudgetItems = [];
 
-                const formatCurrency = (num) => '৳ ' + Number(num || 0).toLocaleString('en-IN');
+            const formatCurrency = (num) => '৳ ' + Number(num || 0).toLocaleString('en-IN');
 
-                async function loadBudgetItems() {
-                    try {
-                        const res = await fetch('./budget-data.json');
-                        if (!res.ok) throw new Error('Failed to fetch budget-data.json');
-                        budgetItems = await res.json();
-                    } catch (err) {
-                        console.error('Error loading budget items:', err);
-                        budgetItems = [];
+            const participantSlider = document.getElementById('participant-slider');
+            const participantInput = document.getElementById('participant-input');
+            const participantCountSpan = document.getElementById('participant-count');
+            const totalAmountEl = document.getElementById('total-amount');
+            const cardViewEl = document.getElementById('card-view');
+            const tableViewEl = document.getElementById('table-view');
+            const tableBodyEl = document.getElementById('table-body');
+            const viewToggleCheckbox = document.getElementById('view-toggle-checkbox');
+
+            function calculateDynamicBudget(participantCount) {
+                if (!originalBudgetItems) return [];
+                const dynamicItems = JSON.parse(JSON.stringify(originalBudgetItems));
+                dynamicItems.forEach(item => {
+                    if (item.per_unit_cost) {
+                        if (item.name_en === 'T-shirt') {
+                            item.cost = participantCount * item.per_unit_cost;
+                        } else if (item.name_en === 'Lunch') {
+                            item.cost = (participantCount + 100) * item.per_unit_cost;
+                        }
                     }
-                }
-
-                // Group flat items into categories if category present, otherwise one general category
-                function groupedItems(items) {
-                    // If items have a 'category' property, group by it. Otherwise return a single group.
-                    const hasCategory = items.some(i => i.category);
-                    if (!hasCategory) {
-                        return [ {
-                            category: 'Expenses',
-                            icon: 'fas fa-list',
-                            items: items.map(i => ({ name: i.name_en, cost: i.cost, notes: i.notes }))
-                        } ];
-                    }
-                    const map = new Map();
-                    items.forEach(i => {
-                        const cat = i.category || 'Expenses';
-                        if (!map.has(cat)) map.set(cat, { category: cat, icon: i.icon || 'fas fa-list', items: [] });
-                        map.get(cat).items.push({ name: i.name_en, cost: i.cost, notes: i.notes });
-                    });
-                    return Array.from(map.values());
-                }
-
-                // Render Card View from data
-                function renderCardView() {
-                    const cardView = document.getElementById('card-view');
-                    const groups = groupedItems(budgetItems);
-                    const html = groups.map(cat => {
-                        if (!cat.items || cat.items.length === 0) return '';
-                        return `
-                        <div class="category-card">
-                            <div class="category-header"><i class="${cat.icon}"></i><h3>${cat.category}</h3></div>
-                            <ul class="budget-list">
-                                ${cat.items.map(item => {
-                                    const tooltipHtml = item.notes
-                                        ? `<div class="tooltip-container">
-                                             <i class="fas fa-info-circle tooltip-icon"></i>
-                                             <span class="tooltip-text">${item.notes}</span>
-                                           </div>`
-                                        : '';
-                                    return `<li class="budget-item">
-                                                <span class="item-name">${item.name}${tooltipHtml}</span>
-                                                <span class="item-cost">${formatCurrency(item.cost)}</span>
-                                            </li>`;
-                                }).join('')}
-                            </ul>
-                        </div>
-                    `;
-                    }).join('');
-                    cardView.innerHTML = html;
-                }
-
-                // Render Table View from data (flattened)
-                function renderTableView() {
-                    const tbody = document.getElementById('table-body');
-                    const rows = budgetItems
-                        .map(item => {
-                            const tooltipHtml = item.notes
-                                ? `<div class="tooltip-container">
-                                     <i class="fas fa-info-circle tooltip-icon"></i>
-                                     <span class="tooltip-text">${item.notes}</span>
-                                   </div>`
-                                : '';
-                            return `
-                            <tr>
-                                <td>${item.name_en}${tooltipHtml}</td>
-                                <td class="item-cost-cell">${formatCurrency(item.cost)}</td>
-                            </tr>
-                        `
-                        })
-                        .join('');
-                    tbody.innerHTML = rows;
-                }
-
-                // Total from data
-                function computeTotalFromData() {
-                    return budgetItems.reduce((s, i) => s + (Number(i.cost) || 0), 0);
-                }
-
-            // --- Animated Counter ---
-            const totalAmountElement = document.getElementById('total-amount');
-            function animateValue(obj, start, end, duration) {
-                let startTimestamp = null;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const currentVal = Math.floor(progress * (end - start) + start);
-                    obj.innerHTML = formatCurrency(currentVal);
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    } else {
-                        obj.innerHTML = formatCurrency(end);
-                    }
-                };
-                window.requestAnimationFrame(step);
+                });
+                return dynamicItems;
             }
 
-            // Update all displays based on loaded data
-            function updateDisplays(animate = false) {
+            function updateDisplay(participantCount) {
+                currentBudgetItems = calculateDynamicBudget(participantCount);
+                
+                const totalBudget = currentBudgetItems.reduce((sum, item) => sum + item.cost, 0);
+                totalAmountEl.textContent = formatCurrency(totalBudget);
+                participantCountSpan.textContent = participantCount;
+
                 renderCardView();
                 renderTableView();
-                const total = computeTotalFromData();
-                if (animate) {
-                    animateValue(totalAmountElement, 0, total, 1000);
-                } else {
-                    totalAmountElement.innerHTML = formatCurrency(total);
+            }
+
+            function handleParticipantChange(event) {
+                const newCount = parseInt(event.target.value, 10);
+                if (isNaN(newCount) || newCount < 100 || newCount > 500) return;
+
+                participantSlider.value = newCount;
+                participantInput.value = newCount;
+                
+                updateDisplay(newCount);
+            }
+
+            async function loadBudgetItems() {
+                try {
+                    const res = await fetch('./budget-data.json');
+                    if (!res.ok) throw new Error('Failed to fetch budget-data.json');
+                    originalBudgetItems = await res.json();
+                    updateDisplay(parseInt(participantInput.value, 10));
+                } catch (err) {
+                    console.error('Error loading budget items:', err);
+                    originalBudgetItems = [];
                 }
+            }
+
+            function groupedItems(items) {
+                const categories = {};
+                // A simple grouping logic, assuming no category field in the provided JSON
+                const itemCategories = {
+                    'Main Band': 'Entertainment', 'Second Band': 'Entertainment', 'Local Band': 'Entertainment', 'Flashmob': 'Entertainment',
+                    'Theme Song Production': 'Production', 'Sound System': 'Production', 'Lighting & Stage': 'Production', 'Camera & Videography': 'Production',
+                    'Band Hospitality': 'Logistics', 'Lunch': 'Logistics',
+                    'T-shirt': 'Merchandise', 'Crest': 'Merchandise', 'Banner': 'Merchandise',
+                    'Opening Ceremony': 'Ceremonies', 'Banner Unveiling Ceremony': 'Ceremonies',
+                    'Marketing': 'Promotion', 'Graffiti Art': 'Promotion', 'Logo Design': 'Promotion',
+                    'Printing': 'Miscellaneous', 'Miscellaneous': 'Miscellaneous'
+                };
+                 const categoryIcons = {
+                    'Entertainment': 'fa-solid fa-music',
+                    'Production': 'fa-solid fa-cogs',
+                    'Logistics': 'fa-solid fa-truck',
+                    'Merchandise': 'fa-solid fa-shopping-cart',
+                    'Ceremonies': 'fa-solid fa-ribbon',
+                    'Promotion': 'fa-solid fa-bullhorn',
+                    'Miscellaneous': 'fa-solid fa-asterisk'
+                };
+
+                items.forEach(item => {
+                    const category = itemCategories[item.name_en] || 'Miscellaneous';
+                    if (!categories[category]) {
+                        categories[category] = {
+                            icon: categoryIcons[category] || 'fa-solid fa-dollar-sign',
+                            items: []
+                        };
+                    }
+                    categories[category].items.push(item);
+                });
+                return categories;
+            }
+
+            function renderCardView() {
+                const categories = groupedItems(currentBudgetItems);
+                cardViewEl.innerHTML = Object.entries(categories).map(([category, data]) => `
+                    <div class="category-card">
+                        <div class="category-header">
+                            <i class="${data.icon}"></i>
+                            <h3>${category}</h3>
+                        </div>
+                        <ul class="budget-list">
+                            ${data.items.map(item => `
+                                <li class="budget-item">
+                                    <span class="item-name">
+                                        ${item.name_en}
+                                        ${item.notes ? `
+                                            <div class="tooltip-container">
+                                                <i class="fas fa-info-circle tooltip-icon"></i>
+                                                <span class="tooltip-text">${item.notes}</span>
+                                            </div>` : ''}
+                                    </span>
+                                    <span class="item-cost">${formatCurrency(item.cost)}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `).join('');
                 setupTooltips();
             }
 
-            // --- Tooltip Mobile Click Logic ---
-            function setupTooltips() {
-                const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-                if (isTouchDevice()) {
-                    document.body.addEventListener('click', function(e) {
-                        const icon = e.target.closest('.tooltip-icon');
-
-                        // Hide all other tooltips
-                        document.querySelectorAll('.tooltip-text.show').forEach(tt => {
-                            if (!icon || tt !== icon.nextElementSibling) {
-                                tt.classList.remove('show');
-                            }
-                        });
-
-                        if (icon) {
-                            const tooltip = icon.nextElementSibling;
-                            if (tooltip && tooltip.classList.contains('tooltip-text')) {
-                                tooltip.classList.toggle('show');
-                            }
-                        }
-                    }, true); // Use capture phase to handle clicks properly
-                }
+            function renderTableView() {
+                tableBodyEl.innerHTML = currentBudgetItems.map(item => `
+                    <tr>
+                        <td>
+                            ${item.name_en}
+                            ${item.notes ? `
+                                <div class="tooltip-container">
+                                    <i class="fas fa-info-circle tooltip-icon"></i>
+                                    <span class="tooltip-text">${item.notes}</span>
+                                </div>` : ''}
+                        </td>
+                        <td class="item-cost-cell">${formatCurrency(item.cost)}</td>
+                    </tr>
+                `).join('');
+                setupTooltips();
             }
 
-            // Load data and initialize views
-            (async function init() {
-                await loadBudgetItems();
-                updateDisplays(true);
-            })();
+            function toggleView() {
+                const isChecked = viewToggleCheckbox.checked;
+                cardViewEl.classList.toggle('hidden', isChecked);
+                tableViewEl.classList.toggle('hidden', !isChecked);
+            }
 
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // Animation is already triggered by updateDisplays(true)
-                        observer.unobserve(entry.target);
+            function setupTooltips() {
+                const tooltipContainers = document.querySelectorAll('.tooltip-container');
+                tooltipContainers.forEach(container => {
+                    const icon = container.querySelector('.tooltip-icon');
+                    const tooltip = container.querySelector('.tooltip-text');
+                    if (icon && tooltip) {
+                        icon.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            // Hide all other tooltips
+                            document.querySelectorAll('.tooltip-text.show').forEach(t => {
+                                if (t !== tooltip) t.classList.remove('show');
+                            });
+                            tooltip.classList.toggle('show');
+                        });
                     }
                 });
-            }, { threshold: 0.5 });
-
-            observer.observe(totalAmountElement);
-
-            // --- View Toggle Logic ---
-            const toggleCheckbox = document.getElementById('view-toggle-checkbox');
-            const cardViewEl = document.getElementById('card-view');
-            const tableViewEl = document.getElementById('table-view');
-            const storageKey = 'budgetViewPreference';
-
-            function switchView(isTableView) {
-                if (isTableView) {
-                    cardViewEl.classList.add('hidden');
-                    tableViewEl.classList.remove('hidden');
-                } else {
-                    cardViewEl.classList.remove('hidden');
-                    tableViewEl.classList.add('hidden');
-                }
             }
-
-            toggleCheckbox.addEventListener('change', () => {
-                const isTableView = toggleCheckbox.checked;
-                switchView(isTableView);
-                localStorage.setItem(storageKey, isTableView ? 'table' : 'card');
+            
+            // Close tooltips when clicking anywhere else
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.tooltip-text.show').forEach(t => t.classList.remove('show'));
             });
 
-            const savedPreference = localStorage.getItem(storageKey);
-            // Default to table (list) view unless user has a saved preference
-            if (savedPreference === 'card') {
-                toggleCheckbox.checked = false;
-                switchView(false);
-            } else {
-                // savedPreference === 'table' or null -> default to table
-                toggleCheckbox.checked = true;
-                switchView(true);
-            }
+            // Initial Load
+            loadBudgetItems();
+
+            // Event Listeners
+            participantSlider.addEventListener('input', handleParticipantChange);
+            participantInput.addEventListener('change', handleParticipantChange);
+            viewToggleCheckbox.addEventListener('change', toggleView);
         });
     </script>
 
