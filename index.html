@@ -338,6 +338,65 @@
             white-space: nowrap;
         }
 
+        /* Tooltip Styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+        }
+
+        .tooltip-icon {
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            font-size: 0.85rem;
+            font-weight: 400;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        /* Desktop hover */
+        @media (hover: hover) {
+            .tooltip-container:hover .tooltip-text {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+
+        /* Mobile click-to-show */
+        .tooltip-container .tooltip-text.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -446,14 +505,14 @@
                         return [ {
                             category: 'Expenses',
                             icon: 'fas fa-list',
-                            items: items.map(i => ({ name: i.name_en, cost: i.cost }))
+                            items: items.map(i => ({ name: i.name_en, cost: i.cost, notes: i.notes }))
                         } ];
                     }
                     const map = new Map();
                     items.forEach(i => {
                         const cat = i.category || 'Expenses';
                         if (!map.has(cat)) map.set(cat, { category: cat, icon: i.icon || 'fas fa-list', items: [] });
-                        map.get(cat).items.push({ name: i.name_en, cost: i.cost });
+                        map.get(cat).items.push({ name: i.name_en, cost: i.cost, notes: i.notes });
                     });
                     return Array.from(map.values());
                 }
@@ -469,7 +528,16 @@
                             <div class="category-header"><i class="${cat.icon}"></i><h3>${cat.category}</h3></div>
                             <ul class="budget-list">
                                 ${cat.items.map(item => {
-                                    return `<li class="budget-item"><span class="item-name">${item.name}</span> <span class="item-cost">${formatCurrency(item.cost)}</span></li>`;
+                                    const tooltipHtml = item.notes
+                                        ? `<div class="tooltip-container">
+                                             <i class="fas fa-info-circle tooltip-icon"></i>
+                                             <span class="tooltip-text">${item.notes}</span>
+                                           </div>`
+                                        : '';
+                                    return `<li class="budget-item">
+                                                <span class="item-name">${item.name}${tooltipHtml}</span>
+                                                <span class="item-cost">${formatCurrency(item.cost)}</span>
+                                            </li>`;
                                 }).join('')}
                             </ul>
                         </div>
@@ -482,12 +550,20 @@
                 function renderTableView() {
                     const tbody = document.getElementById('table-body');
                     const rows = budgetItems
-                        .map(item => `
+                        .map(item => {
+                            const tooltipHtml = item.notes
+                                ? `<div class="tooltip-container">
+                                     <i class="fas fa-info-circle tooltip-icon"></i>
+                                     <span class="tooltip-text">${item.notes}</span>
+                                   </div>`
+                                : '';
+                            return `
                             <tr>
-                                <td>${item.name_en}</td>
+                                <td>${item.name_en}${tooltipHtml}</td>
                                 <td class="item-cost-cell">${formatCurrency(item.cost)}</td>
                             </tr>
-                        `)
+                        `
+                        })
                         .join('');
                     tbody.innerHTML = rows;
                 }
@@ -524,6 +600,32 @@
                     animateValue(totalAmountElement, 0, total, 1000);
                 } else {
                     totalAmountElement.innerHTML = formatCurrency(total);
+                }
+                setupTooltips();
+            }
+
+            // --- Tooltip Mobile Click Logic ---
+            function setupTooltips() {
+                const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+                if (isTouchDevice()) {
+                    document.body.addEventListener('click', function(e) {
+                        const icon = e.target.closest('.tooltip-icon');
+
+                        // Hide all other tooltips
+                        document.querySelectorAll('.tooltip-text.show').forEach(tt => {
+                            if (!icon || tt !== icon.nextElementSibling) {
+                                tt.classList.remove('show');
+                            }
+                        });
+
+                        if (icon) {
+                            const tooltip = icon.nextElementSibling;
+                            if (tooltip && tooltip.classList.contains('tooltip-text')) {
+                                tooltip.classList.toggle('show');
+                            }
+                        }
+                    }, true); // Use capture phase to handle clicks properly
                 }
             }
 

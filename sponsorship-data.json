@@ -57,7 +57,7 @@
     "name": "Clinic",
     "status": "To Be Approached",
     "amount": 40000,
-    "liaison": "Maruf Roddro"
+    "liaison": "Roddro"
   },
   {
     "name": "Prial",
@@ -90,18 +90,6 @@
     "liaison": "None"
   },
   {
-    "name": "Monir",
-    "status": "To Be Approached",
-    "amount": 0,
-    "liaison": "None"
-  },
-  {
-    "name": "Saddam",
-    "status": "To Be Approached",
-    "amount": 0,
-    "liaison": "None"
-  },
-  {
     "name": "Johnny Store",
     "status": "To Be Approached",
     "amount": 0,
@@ -115,12 +103,6 @@
   },
   {
     "name": "Noman",
-    "status": "To Be Approached",
-    "amount": 0,
-    "liaison": "None"
-  },
-  {
-    "name": "Rivi",
     "status": "Approached",
     "amount": 5000,
     "liaison": "None"
@@ -129,6 +111,75 @@
     "name": "Phone Exchange",
     "status": "To Be Approached",
     "amount": 5000,
-    "liaison": "None"
+    "liaison": "Shezan"
   }
-]
+  ,
+    {
+      "name": "Hemel rana",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Monir ahmed",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Saddam hossain",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Shabir hasan batchue",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Azaduzzaman asip",
+      "status": "To Be Approached",
+      "amount": 0,
+      "details": "Radhanagar college gate bazar e nichtolay bose",
+      "liaison": "None"
+    },
+    {
+      "name": "Mosabbir Hossain Sonju",
+      "status": "To Be Approached",
+      "amount": 0,
+      "details": "Krisnopur",
+      "liaison": "None"
+    },
+    {
+      "name": "Rehanul islam bulal",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Anisul Haque babu❗️",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Mahmud un nabi shapon ❗️",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Yamin khan",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    },
+    {
+      "name": "Taslim hasan sweet",
+      "status": "To Be Approached",
+      "amount": 0,
+      "liaison": "None"
+    }
+  ]

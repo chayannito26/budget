@@ -1,22 +1,112 @@
 [
-    { "name_bn": "মূল ব্যান্ড", "name_en": "Main Band", "cost": 280000 },
-    { "name_bn": "দ্বিতীয় ব্যান্ড", "name_en": "Second Band", "cost": 140000 },
-    { "name_bn": "ফ্ল্যাশমব", "name_en": "Flashmob", "cost": 8000 },
-    { "name_bn": "থিম সং প্রোডাকশন", "name_en": "Theme Song Production", "cost": 15000 },
-    { "name_bn": "লোকাল ব্যান্ড", "name_en": "Local Band", "cost": 8000 },
-    { "name_bn": "সাউন্ড সিস্টেম", "name_en": "Sound System", "cost": 100000 },
-    { "name_bn": "লাইটিং ও স্টেজ", "name_en": "Lighting & Stage", "cost": 60000 },
-    { "name_bn": "ব্যান্ড আতিথেয়তা", "name_en": "Band Hospitality", "cost": 25000 },
-    { "name_bn": "ক্যামেরা ও ভিডিওগ্রাফি", "name_en": "Camera & Videography", "cost": 25000 },
-    { "name_bn": "অনুষ্ঠান উদ্বোধন", "name_en": "Opening Ceremony", "cost": 5000 },
-    { "name_bn": "ব্যানার উন্মোচন অনুষ্ঠান", "name_en": "Banner Unveiling Ceremony", "cost": 1550 },
-    { "name_bn": "টি-শার্ট", "name_en": "T-shirt", "cost": 40000 },
-    { "name_bn": "ব্যানার", "name_en": "Banner", "cost": 10000 },
-    { "name_bn": "মার্কেটিং", "name_en": "Marketing", "cost": 6000 },
-    { "name_bn": "গ্রাফিটি আর্ট", "name_en": "Graffiti Art", "cost": 11340 },
-    { "name_bn": "লোগো ডিজাইন", "name_en": "Logo Design", "cost": 1000 },
-    { "name_bn": "লাঞ্চ", "name_en": "Lunch", "cost": 70000 },
-    { "name_bn": "ক্রেস্ট", "name_en": "Crest", "cost": 6000 },
-    { "name_bn": "মুদ্রন", "name_en": "Printing", "cost": 13000 },
-    { "name_bn": "বিবিধ", "name_en": "Miscellaneous", "cost": 5000 }
+    {
+        "name_bn": "মূল ব্যান্ড",
+        "name_en": "Main Band",
+        "cost": 280000
+    },
+    {
+        "name_bn": "দ্বিতীয় ব্যান্ড",
+        "name_en": "Second Band",
+        "cost": 140000
+    },
+    {
+        "name_bn": "ফ্ল্যাশমব",
+        "name_en": "Flashmob",
+        "cost": 8000
+    },
+    {
+        "name_bn": "থিম সং প্রোডাকশন",
+        "name_en": "Theme Song Production",
+        "cost": 15000,
+        "notes": "Including lyrics writing, composition, recording, mixing & mastering"
+    },
+    {
+        "name_bn": "লোকাল ব্যান্ড",
+        "name_en": "Local Band",
+        "cost": 8000
+    },
+    {
+        "name_bn": "সাউন্ড সিস্টেম",
+        "name_en": "Sound System",
+        "cost": 100000,
+        "notes": "Sound system rented from Dhaka from AvoidRafa's preferred vendor"
+    },
+    {
+        "name_bn": "লাইটিং ও স্টেজ",
+        "name_en": "Lighting & Stage",
+        "cost": 60000,
+        "notes": "Stage, lighting, led display and other related equipment rented from Shanai Event Management"
+    },
+    {
+        "name_bn": "ব্যান্ড আতিথেয়তা",
+        "name_en": "Band Hospitality",
+        "cost": 25000,
+        "notes": "Food and accommodation for bands"
+    },
+    {
+        "name_bn": "ক্যামেরা ও ভিডিওগ্রাফি",
+        "name_en": "Camera & Videography",
+        "cost": 25000
+    },
+    {
+        "name_bn": "অনুষ্ঠান উদ্বোধন",
+        "name_en": "Opening Ceremony",
+        "cost": 5000,
+        "notes": "Includes cost for pigeons, balloons, flowers, etc."
+    },
+    {
+        "name_bn": "ব্যানার উন্মোচন অনুষ্ঠান",
+        "name_en": "Banner Unveiling Ceremony",
+        "cost": 1550
+    },
+    {
+        "name_bn": "টি-শার্ট",
+        "name_en": "T-shirt",
+        "cost": 40000,
+        "notes": "Printing shirts for 400 registrants, 40-60 ratio for female-male and 140tk for female 70tk for male"
+    },
+    {
+        "name_bn": "ব্যানার",
+        "name_en": "Banner",
+        "cost": 10000
+    },
+    {
+        "name_bn": "মার্কেটিং",
+        "name_en": "Marketing",
+        "cost": 6000,
+        "notes": "Social media ads, sending bulk sms messages, calling students, and promotions"
+    },
+    {
+        "name_bn": "গ্রাফিটি আর্ট",
+        "name_en": "Graffiti Art",
+        "cost": 11340
+    },
+    {
+        "name_bn": "লোগো ডিজাইন",
+        "name_en": "Logo Design",
+        "cost": 1000
+    },
+    {
+        "name_bn": "লাঞ্চ",
+        "name_en": "Lunch",
+        "cost": 70000,
+        "notes": "Lunch for around 500 participants at the venue each costing 130tk for food+packaging+water+customized packet"
+    },
+    {
+        "name_bn": "ক্রেস্ট",
+        "name_en": "Crest",
+        "cost": 6000,
+        "notes": "Crest for the event to be given to the sponsors and special supporters"
+    },
+    {
+        "name_bn": "মুদ্রন",
+        "name_en": "Printing",
+        "cost": 13000,
+        "notes": "Printing of id cards, invitation cards, entry passes, coupons etc."
+    },
+    {
+        "name_bn": "বিবিধ",
+        "name_en": "Miscellaneous",
+        "cost": 5000
+    }
 ]
