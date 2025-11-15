@@ -72,6 +72,18 @@
     "liaison": "Talha"
   },
   {
+    "name": "Khelna",
+    "status": "To Be Approached",
+    "amount": 5000,
+    "liaison": "Wasi"
+  },
+  {
+    "name": "Gym One",
+    "status": "Approached",
+    "amount": 10000,
+    "liaison": "Wasi Munna"
+  },
+  {
     "name": "Sohani",
     "status": "To Be Approached",
     "amount": 0,
