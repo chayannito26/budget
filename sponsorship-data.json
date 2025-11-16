@@ -18,16 +18,16 @@
     "liaison": "Shanta"
   },
   {
-    "name": "Bipul Pathshala",
+    "name": "Shanto Bipul",
     "status": "Approached",
-    "amount": 20000,
-    "liaison": "Nafiz Anam"
+    "amount": 6000,
+    "liaison": "Nafiz Anam Shafi"
   },
     {
-    "name": "Coaching Center",
+    "name": "Shakil",
     "status": "To Be Approached",
-    "amount": 20000,
-    "liaison": "All"
+    "amount": 2000,
+    "liaison": "Mujahid"
   },
   {
     "name": "Wasi",
@@ -49,9 +49,9 @@
   },
   {
     "name": "Clinic",
-    "status": "To Be Approached",
-    "amount": 30000,
-    "liaison": "Roddro"
+    "status": "Approached",
+    "amount": 0,
+    "liaison": "Roddro Maruf"
   },
   {
     "name": "Prial",
@@ -121,12 +121,6 @@
   }
   ,
     {
-      "name": "Hemel rana",
-      "status": "To Be Approached",
-      "amount": 0,
-      "liaison": "None"
-    },
-    {
       "name": "Monir ahmed",
       "status": "To Be Approached",
       "amount": 0,
@@ -191,14 +185,14 @@
     ,
     {
       "name": "Sanjid Pranto",
-      "status": "To Be Approached",
+      "status": "Approached",
       "amount": 0,
-      "liaison": "None"
+      "liaison": "Real Sk"
     },
     {
       "name": "Bulu",
-      "status": "To Be Approached",
+      "status": "Approached",
       "amount": 2000,
-      "liaison": "None"
+      "liaison": "Roddro"
     }
   ]
