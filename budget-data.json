@@ -7,7 +7,7 @@
     {
         "name_bn": "দ্বিতীয় ব্যান্ড",
         "name_en": "Second Band",
-        "cost": 140000
+        "cost": 130000
     },
     {
         "name_bn": "ফ্ল্যাশমব",
@@ -40,7 +40,7 @@
     {
         "name_bn": "ব্যান্ড আতিথেয়তা",
         "name_en": "Band Hospitality",
-        "cost": 25000,
+        "cost": 50000,
         "notes": "Food and accommodation for bands"
     },
     {
