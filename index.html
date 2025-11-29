@@ -483,14 +483,14 @@
         <section class="total-budget-card">
             <h2>Total Estimated Budget</h2>
             <p class="total-amount" id="total-amount">0</p>
-            
+
                 <div class="participant-calculator">
-                <label for="participant-slider">Adjust for Number of Participants (<span id="participant-count">220</span>)</label>
+                <label for="participant-slider">Adjust for Number of Participants (<span id="participant-count">200</span>)</label>
                 <div class="participant-controls">
                     <div class="slider-container">
-                        <input type="range" min="100" max="500" value="220" id="participant-slider" aria-label="Number of participants slider">
+                        <input type="range" min="100" max="500" value="200" id="participant-slider" aria-label="Number of participants slider">
                     </div>
-                    <input type="number" min="100" max="500" value="220" id="participant-input" aria-label="Number of participants input">
+                    <input type="number" min="100" max="500" value="200" id="participant-input" aria-label="Number of participants input">
                 </div>
             </div>
         </section>
@@ -564,7 +564,7 @@
 
             function updateDisplay(participantCount) {
                 currentBudgetItems = calculateDynamicBudget(participantCount);
-                
+
                 const totalBudget = currentBudgetItems.reduce((sum, item) => sum + item.cost, 0);
                 totalAmountEl.textContent = formatCurrency(totalBudget);
                 participantCountSpan.textContent = participantCount;
@@ -579,7 +579,7 @@
 
                 participantSlider.value = newCount;
                 participantInput.value = newCount;
-                
+
                 updateDisplay(newCount);
             }
 
@@ -698,7 +698,7 @@
                     }
                 });
             }
-            
+
             // Close tooltips when clicking anywhere else
             document.addEventListener('click', () => {
                 document.querySelectorAll('.tooltip-text.show').forEach(t => t.classList.remove('show'));

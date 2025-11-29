@@ -34,7 +34,7 @@
     {
         "name_bn": "লাইটিং ও স্টেজ",
         "name_en": "Lighting & Stage",
-        "cost": 74000,
+        "cost": 90000,
         "notes": "Stage, lighting, led display and other related equipment rented from Shanai Event Management"
     },
     {
@@ -62,9 +62,9 @@
     {
         "name_bn": "টি-শার্ট",
         "name_en": "T-shirt",
-        "cost": 24860,
+        "cost": 22600,
         "per_unit_cost": 113,
-        "notes": "Printing shirts for 220 registrants, 40-60 ratio for female-male and 203tk for female 53tk for male"
+        "notes": "Printing shirts for 200 registrants, 40-60 ratio for female-male and 203tk for female 53tk for male"
     },
     {
         "name_bn": "ব্যানার",
