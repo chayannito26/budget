@@ -549,17 +549,9 @@
 
             function calculateDynamicBudget(participantCount) {
                 if (!originalBudgetItems) return [];
-                const dynamicItems = JSON.parse(JSON.stringify(originalBudgetItems));
-                dynamicItems.forEach(item => {
-                    if (item.per_unit_cost) {
-                        if (item.name_en === 'T-shirt') {
-                            item.cost = participantCount * item.per_unit_cost;
-                        } else if (item.name_en === 'Lunch') {
-                            item.cost = (participantCount + 100) * item.per_unit_cost;
-                        }
-                    }
-                });
-                return dynamicItems;
+                // Revert to fixed amounts: do not dynamically adjust T-shirt or Lunch costs.
+                // Keep a deepcopy so UI can safely mutate if needed elsewhere.
+                return JSON.parse(JSON.stringify(originalBudgetItems));
             }
 
             function updateDisplay(participantCount) {
